@@ -61,6 +61,10 @@ def delete_ingredient(ingredient_id):
 # Initialize database
 conn = create_db()
 
+# Authentication system
+def check_credentials(username, password):
+    return username == "kitchen" and password == "chef1234"
+
 # Streamlit app
 st.title("CRISPAN Hotel Meal Preparation Manager")
 
@@ -121,27 +125,44 @@ with tabs[1]:
 # Tab 3: Manage Ingredients
 with tabs[2]:
     st.header("Manage Ingredients")
-    ingredients = get_ingredients()
-    if ingredients:
-        selected_ingredient = st.selectbox("Select Ingredient to Edit/Delete", options=ingredients, format_func=lambda x: x[1])
-        if selected_ingredient:
-            ingredient_id, name, quantity_per_person, unit, category = selected_ingredient
-            with st.form("edit_ingredient_form"):
-                name = st.text_input("Ingredient Name", value=name)
-                quantity_per_person = st.number_input("Quantity per Person", min_value=0.0, format="%f", value=quantity_per_person)
-                unit = st.text_input("Unit of Measurement", value=unit)
-                category = st.text_input("Category", value=category)
-                save_changes = st.form_submit_button("Save Changes")
-                delete = st.form_submit_button("Delete Ingredient")
 
-                if save_changes:
-                    update_ingredient(ingredient_id, name, quantity_per_person, unit, category)
-                    st.success(f"Ingredient '{name}' updated successfully!")
-                elif delete:
-                    delete_ingredient(ingredient_id)
-                    st.success(f"Ingredient '{name}' deleted successfully!")
+    # Session state for login
+    if "logged_in" not in st.session_state:
+        st.session_state.logged_in = False
+
+    if not st.session_state.logged_in:
+        st.subheader("Login Required")
+        username = st.text_input("Username")
+        password = st.text_input("Password", type="password")
+        if st.button("Login"):
+            if check_credentials(username, password):
+                st.session_state.logged_in = True
+                st.success("Login successful!")
+            else:
+                st.error("Invalid username or password.")
     else:
-        st.warning("No ingredients to manage.")
+        st.subheader("Manage Ingredients Section")
+        ingredients = get_ingredients()
+        if ingredients:
+            selected_ingredient = st.selectbox("Select Ingredient to Edit/Delete", options=ingredients, format_func=lambda x: x[1])
+            if selected_ingredient:
+                ingredient_id, name, quantity_per_person, unit, category = selected_ingredient
+                with st.form("edit_ingredient_form"):
+                    name = st.text_input("Ingredient Name", value=name)
+                    quantity_per_person = st.number_input("Quantity per Person", min_value=0.0, format="%f", value=quantity_per_person)
+                    unit = st.text_input("Unit of Measurement", value=unit)
+                    category = st.text_input("Category", value=category)
+                    save_changes = st.form_submit_button("Save Changes")
+                    delete = st.form_submit_button("Delete Ingredient")
+
+                    if save_changes:
+                        update_ingredient(ingredient_id, name, quantity_per_person, unit, category)
+                        st.success(f"Ingredient '{name}' updated successfully!")
+                    elif delete:
+                        delete_ingredient(ingredient_id)
+                        st.success(f"Ingredient '{name}' deleted successfully!")
+        else:
+            st.warning("No ingredients to manage.")
 
 # Tab 4: Ingredient Report
 with tabs[3]:
