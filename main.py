@@ -116,7 +116,7 @@ with tabs[1]:
                         total_quantity = ingredient[2] * total_people
                         st.write(f"{ingredient_name}: {total_quantity:.2f} {ingredient[3]}")
             elif not selected_ingredients:
-                st.warning("Please select at least one ingredient.")
+                st.warning("Please select ingredient.")
         else:
             st.warning("No ingredients found for the selected category.")
     else:
