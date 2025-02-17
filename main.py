@@ -66,7 +66,7 @@ def check_credentials(username, password):
     return username == "kitchen" and password == "chef1234"
 
 # Streamlit app
-st.title("CRISPAN Hotel Meal Preparation Manager")
+st.title("CRISPAN Hotel Jos, Meal Preparation Manager")
 
 # Tabs
 tabs = st.tabs(["Add Ingredients", "Calculate Ingredients", "Manage Ingredients", "Ingredient Report"])
